@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Para mi  niña </title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: black;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: Arial, sans-serif;
+        }
+        canvas {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="corazonCanvas"></canvas>
+
+    <script>
+        const canvas = document.getElementById('corazonCanvas');
+        const ctx = canvas.getContext('2d');
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const particles = [];
+
+        function createHeartParticles() {
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const size = 120;
+
+            for (let t = 0; t < 2 * Math.PI; t += 0.03) {
+                const x = 16 * Math.pow(Math.sin(t), 3);
+                const y = -(13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t));
+                
+                particles.push({
+                    x: centerX + x * size / 16,
+                    y: centerY + y * size / 16,
+                    size: Math.random() * 3 + 1,
+                    color: `hsl(${Math.random() * 30 + 330}, 100%, 65%)`,
+                    vx: 0,
+                    vy: 0,
+                    originalX: centerX + x * size / 16,
+                    originalY: centerY + y * size / 16,
+                    pulse: Math.random() * Math.PI * 2
+                });
+            }
+        }
+
+        // Función para dibujar el 22 como texto (BRILLO ORIGINAL)
+        function drawNumber22() {
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            
+            // Efecto de brillo ORIGINAL (más llamativo)
+            const glow = Math.sin(Date.now() * 0.005) * 0.3 + 0.7;
+            
+            // Sombra/brillo ORIGINAL
+            ctx.shadowColor = '#00ffff';
+            ctx.shadowBlur = 15 * glow; // Original: 15
+            ctx.font = 'bold 48px Arial';
+            ctx.fillStyle = `rgba(0, 255, 255, ${glow})`; // Con variación de opacidad
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            
+            // Dibujar el número 22
+            ctx.fillText('22', centerX, centerY);
+            
+            // Resetear sombra
+            ctx.shadowBlur = 0;
+        }
+
+        // Función para dibujar "Te amo" en rosa (BRILLO ORIGINAL)
+        function drawTeAmo() {
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            
+            // Efecto de brillo ORIGINAL (más llamativo)
+            const glow = Math.sin(Date.now() * 0.004) * 0.4 + 0.6;
+            
+            // Sombra/brillo ORIGINAL
+            ctx.shadowColor = '#ff69b4';
+            ctx.shadowBlur = 20 * glow; // Original: 20
+            ctx.font = 'bold 36px Arial';
+            ctx.fillStyle = `rgba(255, 105, 180, ${glow})`; // Con variación de opacidad
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            
+            // Dibujar "Te amo" - 150 píxeles arriba del centro
+            ctx.fillText('Te amo', centerX, centerY - 150);
+            
+            // Resetear sombra
+            ctx.shadowBlur = 0;
+        }
+
+        // Función para dibujar texto abajo
+        function drawTextoAbajo() {
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            
+            // Efecto de brillo suave para el texto de abajo
+            const glow = Math.sin(Date.now() * 0.003) * 0.2 + 0.8;
+            
+            // Sombra/brillo
+            ctx.shadowColor = '#F207C0';
+            ctx.shadowBlur = 8 * glow;
+            ctx.font = 'bold 24px Arial';
+            ctx.fillStyle = `rgba A63D8F ${glow})`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            
+            // Dibujar texto - 180 píxeles abajo del centro
+            ctx.fillText('Te amo mi amor', centerX, centerY + 180);
+            
+            // Resetear sombra
+            ctx.shadowBlur = 0;
+        }
+
+        createHeartParticles();
+
+        function gentlePulse() {
+            particles.forEach(particle => {
+                particle.pulse += 0.03;
+                particle.x = particle.originalX + Math.random() * 1 - 0.5;
+                particle.y = particle.originalY + Math.random() * 1 - 0.5;
+                particle.size = Math.random() * 0.3 + (Math.sin(particle.pulse) * 0.2 + 1.5);
+            });
+            setTimeout(gentlePulse, 150);
+        }
+
+        function animate() {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Dibujar partículas del corazón
+            particles.forEach(particle => {
+                particle.x += particle.vx;
+                particle.y += particle.vy;
+                particle.vx *= 0.92;
+                particle.vy *= 0.92;
+
+                ctx.beginPath();
+                ctx.arc(particle.x, particle.y, particle.size, 0, 2 * Math.PI);
+                ctx.fillStyle = particle.color;
+                ctx.fill();
+
+                ctx.beginPath();
+                ctx.arc(particle.x, particle.y, particle.size * 0.3, 0, 2 * Math.PI);
+                ctx.fillStyle = `rgba(255, 255, 255, 0.2)`;
+                ctx.fill();
+            });
+
+            // Dibujar el número 22
+            drawNumber22();
+            
+            // Dibujar "Te amo"
+            drawTeAmo();
+            
+            // Dibujar texto abajo
+            drawTextoAbajo();
+
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+        gentlePulse();
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+    </script>
+</body>
+</html>
